@@ -50,7 +50,7 @@ export class HelpCommand {
 
   private createIdsCommand(): Command {
     return new Command("ids")
-      .description("Show short ID color coding system")
+      .description("Show short ID colour coding system")
       .action(() => {
         this.showIdColors();
       });
@@ -227,20 +227,26 @@ export class HelpCommand {
     console.log("  -l, --label <name>      Filter by label");
     console.log("  -d, --due <when>        Filter by due date");
     console.log("  -r, --priority <1-4>    Filter by priority");
-    console.log("  -c, --completed         Show completed tasks only");
+    console.log("  -c, --completed         Show completed tasks (default: last day)");
     console.log(
       "  -s, --sort <field>      Sort by: priority, due-date, created"
     );
     console.log(
       "  -f, --format <type>     Output format: table, minimal, json"
     );
-    console.log("  --no-colors            Disable colored output");
+    console.log("  --no-colours            Disable coloured output");
     console.log("");
     console.log(chalk.bold("EXAMPLES:"));
     console.log("  2do2 list                    # All active tasks");
     console.log('  2do2 ls -p "Work"           # Work project tasks');
     console.log(
       "  2do2 list -d today -r 4     # High priority tasks due today"
+    );
+    console.log(
+      "  2do2 ls -c                  # Completed tasks (last day)"
+    );
+    console.log(
+      "  2do2 ls -c -d today         # Tasks completed today"
     );
     console.log(
       "  2do2 ls -c -f minimal       # Completed tasks, minimal view"
@@ -336,7 +342,7 @@ export class HelpCommand {
     console.log("  default-project        Default project for new tasks");
     console.log("  output-format          Default output format");
     console.log("  date-format           Date display format");
-    console.log("  colors                 Enable/disable colors");
+    console.log("  colours                 Enable/disable colours");
   }
 
   private showProjectsHelp(): void {
@@ -378,7 +384,7 @@ export class HelpCommand {
     console.log(
       "  -f, --format           Output format (table, minimal, json)"
     );
-    console.log("  --no-colors           Disable colored output");
+    console.log("  --no-colours           Disable coloured output");
     console.log("  -h, --help            Show help");
     console.log("");
     console.log(chalk.bold("FILTERING FLAGS:"));
@@ -425,7 +431,7 @@ export class HelpCommand {
     console.log(
       "  Minimal output:       2do2 config set output-format minimal"
     );
-    console.log("  Disable colors:       2do2 config set colors false");
+    console.log("  Disable colours:       2do2 config set colours false");
   }
 
   private showDateAliases(): void {
@@ -444,18 +450,18 @@ export class HelpCommand {
   }
 
   private showIdColors(): void {
-    console.log(chalk.bold("🔤 SHORT ID COLOR CODING"));
+    console.log(chalk.bold("🔤 SHORT ID COLOUR CODING"));
     console.log("");
     console.log(ColoredID.getLegend());
     console.log("");
-    console.log(chalk.bold("WHY COLOR CODING?"));
+    console.log(chalk.bold("WHY COLOUR CODING?"));
     console.log("• Helps distinguish similar characters (1, l, i)");
-    console.log("• Makes IDs easier to read and remember");
+    console.log("• Makes IDs easier to read and memorise");
     console.log("• Reduces typing errors when entering IDs");
     console.log("");
     console.log(
-      chalk.gray("Colors only show when terminal colors are enabled")
+      chalk.gray("Colours only show when terminal colours are enabled")
     );
-    console.log(chalk.gray("Use --no-colors flag to disable if needed"));
+    console.log(chalk.gray("Use --no-colours flag to disable if needed"));
   }
 }

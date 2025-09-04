@@ -62,7 +62,7 @@ export class ProjectsCommand extends BaseCommand {
 
   private async executeList(options: any): Promise<void> {
     const projects = await this.api.getProjects();
-    const output = OutputFormatter.formatProjects(projects, options.colors !== false);
+    const output = OutputFormatter.formatProjects(projects, options.colors !== false && options.colours !== false);
     console.log(output);
   }
 

@@ -8,7 +8,7 @@ A powerful CLI tool for managing your Todoist items from the command line.
 - Add new tasks with projects, labels, and due dates
 - Alert offset system (get notified before/after due time)  
 - Date aliases with short forms (today/t, tomorrow/tm, next week/nw, next month/nm)
-- Mark tasks as complete or incomplete using color-coded short alphanumeric IDs (base36)
+- Mark tasks as complete or incomplete using colour-coded short alphanumeric IDs (base36)
 - Update task details (name, project, labels, priority, offset)
 - Delete tasks
 - Manage projects and labels
@@ -83,8 +83,10 @@ Set up your Todoist API token:
 2do2 list -d today
 2do2 list -d t              # Today (short alias)
 2do2 list -d tm             # Tomorrow (short alias)
-2do2 list --completed
+2do2 list --completed       # Completed tasks (last day)
 2do2 list -c
+2do2 list -c -d today       # Tasks completed today
+2do2 list -c -d 2024-01-15  # Tasks completed on specific date
 2do2 list --priority 4
 2do2 list -r 4
 
@@ -227,14 +229,29 @@ Set up your Todoist API token:
 # Set default output format
 2do2 config set output-format table
 
-# Enable/disable colors
-2do2 config set colors true
+# Enable/disable colours
+2do2 config set colours true
 
 # Remove default project (tasks go to Inbox)
 2do2 config unset default-project
 
 # View current default project
 2do2 config get default-project
+```
+
+## Completed Tasks
+
+The `-c/--completed` flag shows completed tasks instead of active ones:
+
+- **Default behaviour**: Shows completed tasks from the last day
+- **With date filter**: Shows tasks completed on the specified date
+- **Date format**: Use `YYYY-MM-DD`, date aliases (`today`, `t`, `tm`, etc.), or natural formats
+
+```bash
+2do2 list -c                    # Last day's completed tasks
+2do2 list -c -d today          # Tasks completed today  
+2do2 list -c -d 2024-01-15     # Tasks completed on specific date
+2do2 list -c -d "last monday"  # Tasks completed last Monday
 ```
 
 ## Short Flag Reference
@@ -320,10 +337,10 @@ $ 2do2 add "Task without project"
 
 ## Short ID System
 
-Tasks are assigned short, unique alphanumeric IDs with color coding for better readability:
+Tasks are assigned short, unique alphanumeric IDs with colour coding for better readability:
 
 ```bash
-# List shows color-coded short IDs
+# List shows colour-coded short IDs
 $ 2do2 list
 📋 Tasks
 2a   🔴 Buy groceries (Work)         Due: Today 6pm    
@@ -331,7 +348,7 @@ $ 2do2 list
 9z   🟢 Review code (Dev)            Due: Dec 25       
 4k   📝 Write docs                                     
 
-# Color coding helps distinguish similar characters:
+# Colour coding helps distinguish similar characters:
 # - Numbers (0-9): Cyan
 # - Consonants (b,c,d,f...): Magenta
 # - Vowels (a,e,i,o,u): Yellow
@@ -341,7 +358,7 @@ $ 2do2 comp 2a     # ✓ Works - unique
 $ 2do2 comp 2      # ❌ Might be ambiguous if multiple IDs start with 2
 $ 2do2 comp 9z     # ✓ Works - unique
 
-# Get help on ID color system
+# Get help on ID colour system
 $ 2do2 help ids
 ```
 
@@ -349,7 +366,7 @@ $ 2do2 help ids
 
 ### Colors and Icons
 
-The CLI uses colors and icons for visual clarity:
+The CLI uses colours and icons for visual clarity:
 
 **Task Priority & Status:**
 - 🔴 **Red** - High priority (4) / Overdue
@@ -361,7 +378,7 @@ The CLI uses colors and icons for visual clarity:
 - 🏷️ **Tag** - Labels
 - 📁 **Folder** - Projects
 
-**Short ID Colors:**
+**Short ID Colours:**
 - 🔵 **Cyan** - Numbers (0-9)
 - 🟣 **Magenta** - Consonants (b,c,d,f...)
 - 🟡 **Yellow** - Vowels (a,e,i,o,u)
@@ -451,7 +468,7 @@ ID   Pr.  Task                                            Project         Due Da
 2do2 comp 2a 5x 9z                 # Complete multiple tasks at once
 
 # Check tasks with visual formatting
-2do2 list -d today -f table        # Today's tasks in colorful table
+2do2 list -d today -f table        # Today's tasks in colourful table
 2do2 list -c -f minimal            # Completed tasks, minimal view
 ```
 

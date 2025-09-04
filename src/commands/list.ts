@@ -44,9 +44,54 @@ export class ListCommand extends BaseCommand {
   }
 
   private async execute(
-    options: FilterOptions & { format?: string; colors?: boolean }
+    options: FilterOptions & { format?: string; colors?: boolean; colours?: boolean }
   ): Promise<void> {
-    const tasks = await this.api.getTasks();
+    let tasks: any[];
+    
+    // Fetch completed or active tasks based on the flag
+    if (options.completed) {
+      // Default to last day for completed tasks, or use date filter if provided
+      let since: string | undefined;
+      let until: string | undefined;
+      
+      if (options.due) {
+        // If a due date filter is provided, use it as the time range for completed tasks
+        const expandedDate = DateHelper.expandDateAlias(options.due);
+        try {
+          const targetDate = new Date(expandedDate);
+          if (!isNaN(targetDate.getTime())) {
+            since = startOfDay(targetDate).toISOString();
+            until = endOfDay(targetDate).toISOString();
+            
+            // Debug: Log the date range being used
+            console.log(`Filtering completed tasks for date range: ${since} to ${until}`);
+          } else {
+            throw new Error(`Invalid date: ${expandedDate}`);
+          }
+        } catch (error) {
+          console.error(`Invalid date format: ${options.due} (expanded to: ${expandedDate})`);
+          console.error(`Error: ${error}`);
+          return;
+        }
+      } else {
+        // Default to last day if no date specified
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        since = startOfDay(yesterday).toISOString();
+        until = endOfDay(new Date()).toISOString(); // Include today
+      }
+      
+      tasks = await this.api.getCompletedTasks(since, until);
+      
+      // Provide user feedback about date filtering
+      if (options.due && tasks.length === 0) {
+        console.log(`No completed tasks found for date: ${options.due}`);
+        console.log(`Try a different date or use "2do2 list -c" to see recent completed tasks.`);
+      }
+    } else {
+      tasks = await this.api.getTasks();
+    }
+    
     const projects = await this.api.getProjects();
 
     // Filter tasks
@@ -92,7 +137,7 @@ export class ListCommand extends BaseCommand {
     // Label filter
     if (options.label) {
       filteredTasks = filteredTasks.filter((task) =>
-        task.labels.some((label) =>
+        task.labels.some((label: string) =>
           label.toLowerCase().includes(options.label!.toLowerCase())
         )
       );
@@ -110,13 +155,8 @@ export class ListCommand extends BaseCommand {
       );
     }
 
-    // Completed filter
-    if (options.completed) {
-      filteredTasks = filteredTasks.filter((task) => task.is_completed);
-    } else {
-      // By default, show only non-completed tasks
-      filteredTasks = filteredTasks.filter((task) => !task.is_completed);
-    }
+    // Note: Completed/active filtering is now handled at the API level
+    // No additional filtering needed here since we fetch the correct task type
 
     // Sort tasks
     if (options.sort) {
@@ -150,7 +190,7 @@ export class ListCommand extends BaseCommand {
     // Format and output
     const output = OutputFormatter.formatTasks(tasksWithIds, projects, {
       format: (options.format as any) || "table",
-      colors: options.colors !== false,
+      colors: options.colors !== false && options.colours !== false,
     });
 
     console.log(output);

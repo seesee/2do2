@@ -62,6 +62,90 @@ export class TodoistAPI {
     return response.data;
   }
 
+  async getCompletedTasks(since?: string, until?: string, limit: number = 200): Promise<TodoistTask[]> {
+    this.ensureToken();
+    
+    // Use the dedicated completed tasks endpoint
+    const syncClient = axios.create({
+      baseURL: 'https://api.todoist.com/sync/v9',
+      timeout: 10000,
+    });
+
+    const token = this.getToken();
+    
+    try {
+      const params: any = {
+        limit: limit,
+        offset: 0
+      };
+
+      // If date filtering is needed, we'll filter after fetching
+      // The completed/get_all endpoint doesn't support date filtering
+      
+      const response = await syncClient.get('/completed/get_all', {
+        params,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const completedItems = response.data?.items || [];
+      
+      // Debug: Log the structure of the first item if in development
+      if (completedItems.length > 0 && process.env.NODE_ENV === 'development') {
+        console.log('Sample completed item structure:', JSON.stringify(completedItems[0], null, 2));
+      }
+      
+      // Filter by date if since/until parameters are provided
+      let filteredItems = completedItems;
+      if (since || until) {
+        const sinceDate = since ? new Date(since) : null;
+        const untilDate = until ? new Date(until) : null;
+        
+        filteredItems = completedItems.filter((item: any) => {
+          // Try different possible field names for completion date
+          const completedAtStr = item.completed_at || item.completed_date || item.date_completed;
+          
+          if (!completedAtStr) {
+            // If no completion date, exclude from filtered results
+            return false;
+          }
+          
+          const completedDate = new Date(completedAtStr);
+          
+          // Debug logging for date filtering
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`Filtering task "${item.content}": completed_at=${completedAtStr}, completedDate=${completedDate.toISOString()}, since=${since}, until=${until}`);
+          }
+          
+          if (sinceDate && completedDate < sinceDate) return false;
+          if (untilDate && completedDate > untilDate) return false;
+          return true;
+        });
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Date filtering: ${completedItems.length} -> ${filteredItems.length} items`);
+        }
+      }
+      
+      // Transform completed items to match TodoistTask interface
+      return filteredItems.map((item: any) => ({
+        id: item.id || item.task_id || '',
+        content: item.content || '',
+        project_id: item.project_id || '',
+        priority: item.priority || 1,
+        due: item.due,
+        labels: item.labels || [],
+        is_completed: true,
+        created_at: item.date_added || item.added_at || item.completed_at || new Date().toISOString(),
+        completed_at: item.completed_at
+      })).filter((task: any) => task.id && task.content); // Filter out invalid tasks
+    } catch (error) {
+      console.warn('Failed to fetch completed tasks via Sync API:', error);
+      return [];
+    }
+  }
+
   async getProjects(): Promise<TodoistProject[]> {
     this.ensureToken();
     const response: AxiosResponse<TodoistProject[]> = await this.client.get(

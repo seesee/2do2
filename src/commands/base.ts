@@ -35,6 +35,7 @@ export abstract class BaseCommand {
   protected setupGlobalOptions(command: Command): Command {
     return command
       .option('-f, --format <format>', 'output format (table, minimal, json)', 'table')
-      .option('--no-colors', 'disable colored output');
+      .option('--no-colors', 'disable coloured output')
+      .option('--no-colours', 'disable coloured output (British spelling)');
   }
 }

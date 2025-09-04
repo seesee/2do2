@@ -96,7 +96,7 @@ export class ConfigCommand extends BaseCommand {
     console.log(chalk.gray("Output Format:"), allConfig.outputFormat);
     console.log(chalk.gray("Date Format:"), allConfig.dateFormat);
     console.log(
-      chalk.gray("Colors:"),
+      chalk.gray("Colours:"),
       allConfig.colors ? chalk.green("Enabled") : chalk.red("Disabled")
     );
 
@@ -118,6 +118,7 @@ export class ConfigCommand extends BaseCommand {
       "outputFormat",
       "dateFormat",
       "colors",
+      "colours",
     ];
 
     if (!validKeys.includes(key)) {
@@ -162,12 +163,13 @@ export class ConfigCommand extends BaseCommand {
         break;
 
       case "colors":
+      case "colours":
         const boolValue = ["true", "1", "yes", "on"].includes(
           value.toLowerCase()
         );
         config.set("colors", boolValue);
         console.log(
-          chalk.green(`✅ Colors ${boolValue ? "enabled" : "disabled"}`)
+          chalk.green(`✅ Colours ${boolValue ? "enabled" : "disabled"}`)
         );
         break;
 
@@ -179,7 +181,7 @@ export class ConfigCommand extends BaseCommand {
         console.error(chalk.red(`❌ Invalid configuration key: ${key}`));
         console.error(
           chalk.blue(
-            "💡 Valid keys: default-project, output-format, date-format, colors, token"
+            "💡 Valid keys: default-project, output-format, date-format, colours/colors, token"
           )
         );
         break;
@@ -214,15 +216,16 @@ export class ConfigCommand extends BaseCommand {
         break;
 
       case "colors":
+      case "colours":
         config.delete("colors");
-        console.log(chalk.green("✅ Colors reset to default (enabled)"));
+        console.log(chalk.green("✅ Colours reset to default (enabled)"));
         break;
 
       default:
         console.error(chalk.red(`❌ Invalid configuration key: ${key}`));
         console.error(
           chalk.blue(
-            "💡 Valid keys: default-project, output-format, date-format, colors, token"
+            "💡 Valid keys: default-project, output-format, date-format, colours/colors, token"
           )
         );
         break;

@@ -154,7 +154,7 @@
 # Set defaults
 2do2 config set default-project "Work"
 2do2 config set output-format "minimal" 
-2do2 config set colors true
+2do2 config set colours true
 
 # Date format (using date-fns format)
 2do2 config set date-format "yyyy-MM-dd HH:mm"

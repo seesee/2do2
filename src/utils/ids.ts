@@ -14,9 +14,11 @@ export class IDManager {
     const tasksWithShortIds: TaskWithShortId[] = [];
 
     // Sort tasks consistently to ensure stable short IDs
-    const sortedTasks = [...tasks].sort((a, b) =>
-      a.created_at.localeCompare(b.created_at)
-    );
+    const sortedTasks = [...tasks].sort((a, b) => {
+      const aCreated = a.created_at || '';
+      const bCreated = b.created_at || '';
+      return aCreated.localeCompare(bCreated);
+    });
 
     for (const task of sortedTasks) {
       const shortId = this.generateAlphanumericId(task.id);

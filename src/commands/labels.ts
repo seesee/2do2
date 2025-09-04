@@ -62,7 +62,7 @@ export class LabelsCommand extends BaseCommand {
 
   private async executeList(options: any): Promise<void> {
     const labels = await this.api.getLabels();
-    const output = OutputFormatter.formatLabels(labels, options.colors !== false);
+    const output = OutputFormatter.formatLabels(labels, options.colors !== false && options.colours !== false);
     console.log(output);
   }
 
